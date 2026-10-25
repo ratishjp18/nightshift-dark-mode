@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "NightShift Dark Mode",
+  "version": "1.0",
+  "description": "Toggle dark mode on any website. Per-site preferences stored in a Python backend.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "NightShift Dark Mode",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": ["activeTab", "storage", "tabs"],
+  "host_permissions": [
+    "http://localhost:5000/*",
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

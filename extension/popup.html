@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NightShift</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <span class="moon-icon" aria-hidden="true">🌙</span>
+      <span class="app-title">NightShift</span>
+    </div>
+    <div class="backend-status" title="Python backend status">
+      <span class="status-dot" id="statusDot"></span>
+      <span class="status-label" id="statusLabel">—</span>
+    </div>
+  </div>
+
+  <!-- Current domain -->
+  <div class="domain-section">
+    <span class="domain-label">Current site</span>
+    <span class="domain-name" id="domainName">Loading…</span>
+  </div>
+
+  <!-- Toggle -->
+  <div class="toggle-section">
+    <div class="toggle-info">
+      <span class="toggle-title">Dark Mode</span>
+      <span class="toggle-subtitle" id="toggleSubtitle">Off</span>
+    </div>
+    <label class="toggle-switch" aria-label="Toggle dark mode">
+      <input type="checkbox" id="darkModeToggle" />
+      <span class="slider"></span>
+    </label>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <span class="stats-text" id="statsText">Loading…</span>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span class="footer-text">NightShift v1.0 · Python backend on :5000</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
