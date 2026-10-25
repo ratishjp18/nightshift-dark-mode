@@ -1,32 +1,32 @@
 /**
  * content.js — NightShift Dark Mode
  * Injected into every page at document_start.
- * Applies/removes dark mode CSS based on per-domain preference in chrome.storage.
+ * Applies/removes dark mode CSS with adjustable intensity.
  */
 (function () {
   'use strict';
 
   const STYLE_ID = 'nightshift-dark-mode-style';
 
-  function applyDarkMode() {
-    if (document.getElementById(STYLE_ID)) return;
+  function applyDarkMode(intensity = 80) {
+    let el = document.getElementById(STYLE_ID);
+    if (!el) {
+      el = document.createElement('style');
+      el.id = STYLE_ID;
+      const target = document.head || document.documentElement;
+      target.appendChild(el);
+    }
 
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = `
-      /* Invert page colours, rotate hue back so overall tones stay correct */
+    const brightness = (intensity / 100).toFixed(2);
+    el.textContent = `
       html {
-        filter: invert(1) hue-rotate(180deg) !important;
+        filter: invert(1) hue-rotate(180deg) brightness(${brightness}) !important;
       }
-      /* Re-invert media elements so photos/videos look natural */
       img, video, canvas, iframe, embed, object,
       svg image, picture, [style*="background-image"] {
-        filter: invert(1) hue-rotate(180deg) !important;
+        filter: invert(1) hue-rotate(180deg) brightness(${brightness}) !important;
       }
     `;
-
-    const target = document.head || document.documentElement;
-    target.appendChild(style);
   }
 
   function removeDarkMode() {
@@ -34,16 +34,30 @@
     if (el) el.remove();
   }
 
-  // Read stored preference and apply as early as possible (avoids flash of light content)
+  // Apply on page load based on stored preference
   const domain = window.location.hostname;
-  chrome.storage.local.get([domain], (result) => {
-    if (result[domain] === true) applyDarkMode();
+  chrome.storage.local.get([domain, `${domain}_intensity`], (result) => {
+    if (result[domain] === true) {
+      applyDarkMode(result[`${domain}_intensity`] ?? 80);
+    }
   });
 
-  // Listen for toggle messages sent by the popup
+  // Listen for messages from popup
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-    if (msg.action === 'enableDark')  { applyDarkMode();    sendResponse({ ok: true }); }
-    if (msg.action === 'disableDark') { removeDarkMode();   sendResponse({ ok: true }); }
-    if (msg.action === 'getStatus')   { sendResponse({ enabled: !!document.getElementById(STYLE_ID), domain }); }
+    if (msg.action === 'enableDark') {
+      applyDarkMode(msg.intensity ?? 80);
+      sendResponse({ ok: true });
+    }
+    if (msg.action === 'disableDark') {
+      removeDarkMode();
+      sendResponse({ ok: true });
+    }
+    if (msg.action === 'setIntensity') {
+      applyDarkMode(msg.intensity);
+      sendResponse({ ok: true });
+    }
+    if (msg.action === 'getStatus') {
+      sendResponse({ enabled: !!document.getElementById(STYLE_ID), domain });
+    }
   });
 })();
