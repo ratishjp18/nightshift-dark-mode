@@ -14,10 +14,6 @@
       <span class="moon-icon" aria-hidden="true">🌙</span>
       <span class="app-title">NightShift</span>
     </div>
-    <div class="backend-status" title="Python backend status">
-      <span class="status-dot" id="statusDot"></span>
-      <span class="status-label" id="statusLabel">—</span>
-    </div>
   </div>
 
   <!-- Current domain -->
@@ -38,6 +34,15 @@
     </label>
   </div>
 
+  <!-- Intensity slider (visible only when dark mode is on) -->
+  <div class="intensity-section" id="intensitySection" style="display:none">
+    <div class="intensity-header">
+      <span class="intensity-label">Intensity</span>
+      <span class="intensity-value" id="intensityValue">80%</span>
+    </div>
+    <input type="range" id="intensitySlider" min="40" max="100" step="5" value="80" />
+  </div>
+
   <!-- Stats -->
   <div class="stats-bar">
     <span class="stats-text" id="statsText">Loading…</span>
@@ -45,7 +50,7 @@
 
   <!-- Footer -->
   <div class="footer">
-    <span class="footer-text">NightShift v1.0 · Python backend on :5000</span>
+    <span class="footer-text">NightShift v1.0</span>
   </div>
 
   <script src="popup.js"></script>
