@@ -1,23 +1,38 @@
 /**
  * content.js — NightShift Dark Mode
- * Injected into every page at document_start.
- * Applies/removes dark mode CSS with adjustable intensity.
+ *
+ * Features:
+ *  - Smooth fade transition when toggling on/off
+ *  - Intensity slider: controls shade (40=lighter, 100=darker)
  */
 (function () {
   'use strict';
 
-  const STYLE_ID = 'nightshift-dark-mode-style';
+  const STYLE_ID       = 'nightshift-dark-mode-style';
+  const TRANS_STYLE_ID = 'nightshift-transition-style';
+
+  function injectTransition() {
+    if (document.getElementById(TRANS_STYLE_ID)) return;
+    const style = document.createElement('style');
+    style.id = TRANS_STYLE_ID;
+    style.textContent = `
+      html { transition: filter 0.5s ease !important; }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+  }
 
   function applyDarkMode(intensity = 80) {
+    injectTransition();
+
     let el = document.getElementById(STYLE_ID);
     if (!el) {
       el = document.createElement('style');
       el.id = STYLE_ID;
-      const target = document.head || document.documentElement;
-      target.appendChild(el);
+      (document.head || document.documentElement).appendChild(el);
     }
 
-    const brightness = (intensity / 100).toFixed(2);
+    const brightness = (1.7 - (intensity / 100) * 1.1).toFixed(2);
+
     el.textContent = `
       html {
         filter: invert(1) hue-rotate(180deg) brightness(${brightness}) !important;
@@ -30,11 +45,11 @@
   }
 
   function removeDarkMode() {
+    injectTransition();
     const el = document.getElementById(STYLE_ID);
     if (el) el.remove();
   }
 
-  // Apply on page load based on stored preference
   const domain = window.location.hostname;
   chrome.storage.local.get([domain, `${domain}_intensity`], (result) => {
     if (result[domain] === true) {
@@ -42,22 +57,10 @@
     }
   });
 
-  // Listen for messages from popup
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-    if (msg.action === 'enableDark') {
-      applyDarkMode(msg.intensity ?? 80);
-      sendResponse({ ok: true });
-    }
-    if (msg.action === 'disableDark') {
-      removeDarkMode();
-      sendResponse({ ok: true });
-    }
-    if (msg.action === 'setIntensity') {
-      applyDarkMode(msg.intensity);
-      sendResponse({ ok: true });
-    }
-    if (msg.action === 'getStatus') {
-      sendResponse({ enabled: !!document.getElementById(STYLE_ID), domain });
-    }
+    if (msg.action === 'enableDark')   { applyDarkMode(msg.intensity ?? 80); sendResponse({ ok: true }); }
+    if (msg.action === 'disableDark')  { removeDarkMode();                   sendResponse({ ok: true }); }
+    if (msg.action === 'setIntensity') { applyDarkMode(msg.intensity);       sendResponse({ ok: true }); }
+    if (msg.action === 'getStatus')    { sendResponse({ enabled: !!document.getElementById(STYLE_ID), domain }); }
   });
 })();

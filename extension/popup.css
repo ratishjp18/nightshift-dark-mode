@@ -19,7 +19,7 @@ body {
 }
 
 .logo { display: flex; align-items: center; gap: 9px; }
-.moon-icon { font-size: 22px; line-height: 1; }
+.moon-svg { flex-shrink: 0; }
 .app-title {
   font-size: 17px;
   font-weight: 700;
@@ -96,9 +96,9 @@ input:disabled + .slider { opacity: .4; cursor: not-allowed; }
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;
-  height: 4px;
+  height: 5px;
   border-radius: 4px;
-  background: linear-gradient(to right, #3d6fd4 var(--val, 80%), #383858 var(--val, 80%));
+  background: #4a4a68;
   outline: none;
   cursor: pointer;
 }

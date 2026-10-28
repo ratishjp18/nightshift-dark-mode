@@ -11,7 +11,20 @@
   <!-- Header -->
   <div class="header">
     <div class="logo">
-      <span class="moon-icon" aria-hidden="true">🌙</span>
+      <svg width="28" height="28" viewBox="0 0 200 200" class="moon-svg" aria-hidden="true">
+        <defs>
+          <radialGradient id="mf" cx="40%" cy="35%" r="65%">
+            <stop offset="0%"   stop-color="#fff4a3"/>
+            <stop offset="50%"  stop-color="#fcd84b"/>
+            <stop offset="100%" stop-color="#e8a800"/>
+          </radialGradient>
+          <mask id="cm">
+            <rect width="200" height="200" fill="white"/>
+            <circle cx="126" cy="76" r="58" fill="black"/>
+          </mask>
+        </defs>
+        <circle cx="90" cy="100" r="70" fill="url(#mf)" mask="url(#cm)"/>
+      </svg>
       <span class="app-title">NightShift</span>
     </div>
   </div>
