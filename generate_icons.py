@@ -1,6 +1,6 @@
 """
 generate_icons.py — NightShift Dark Mode
-Generates the three PNG toolbar icons the Chrome extension needs.
+Generates PNG toolbar icons using the golden crescent moon design.
 
 Run once before loading the extension:
     pip install Pillow
@@ -21,33 +21,31 @@ os.makedirs(OUT_DIR, exist_ok=True)
 
 
 def make_icon(size: int) -> Image.Image:
-    """Draw a crescent moon on a dark-blue circle."""
+    """Draw a golden crescent moon, centered and fully within the canvas."""
     img  = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
-    pad  = max(1, size // 10)
 
-    # Background circle — deep navy
-    draw.ellipse([pad, pad, size - pad, size - pad], fill=(15, 25, 60, 255))
+    # Scale so the crescent fills ~85% of the icon with even padding on all sides
+    # Crescent visible bounding box ≈ 140 SVG units wide/tall
+    scale = (size * 0.85) / 140
 
-    # Moon body — warm cream/yellow
-    cx, cy = size // 2, size // 2
-    r = max(3, int(size * 0.30))
-    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(255, 232, 140, 255))
+    r = int(70 * scale)   # outer moon radius
 
-    # Overlay circle offset to carve out a crescent
-    sr = max(2, int(r * 0.82))
-    dx = max(1, int(r * 0.48))
-    dy = max(1, int(r * 0.08))
-    draw.ellipse([cx - sr + dx, cy - sr - dy, cx + sr + dx, cy + sr - dy],
-                 fill=(15, 25, 60, 255))
+    # Center the moon in the canvas
+    cx = size // 2
+    cy = size // 2
 
-    # Stars (only visible at 48 px and above)
-    if size >= 48:
-        sc = (200, 220, 255, 180)
-        sr2 = max(1, size // 28)
-        for sx, sy in [(0.70, 0.22), (0.80, 0.44), (0.68, 0.64), (0.58, 0.18)]:
-            x, y = int(sx * size), int(sy * size)
-            draw.ellipse([x - sr2, y - sr2, x + sr2, y + sr2], fill=sc)
+    # Cutout offset relative to moon center
+    # In SVG: cutout center (126,76) minus moon center (90,100) = (+36, -24)
+    cx2 = cx + int(36  * scale)
+    cy2 = cy + int(-24 * scale)
+    r2  = int(58 * scale)   # cutout radius
+
+    # Draw moon body
+    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=(252, 216, 75, 255))
+
+    # Carve out crescent by drawing transparent circle
+    draw.ellipse([cx2 - r2, cy2 - r2, cx2 + r2, cy2 + r2], fill=(0, 0, 0, 0))
 
     return img
 
@@ -55,6 +53,6 @@ def make_icon(size: int) -> Image.Image:
 for sz in [16, 48, 128]:
     path = os.path.join(OUT_DIR, f"icon{sz}.png")
     make_icon(sz).save(path, "PNG")
-    print(f"  ✅  {path}")
+    print(f"  ✅  Saved {path}")
 
-print("\n🌙  Icons ready. Load the extension/ folder in Chrome.\n")
+print("\n🌙  Icons generated. Reload the extension in Chrome.\n")
